@@ -1,0 +1,31 @@
+name = "skillcard-worker"
+main = "worker/src/index.ts"
+compatibility_date = "2024-12-01"
+
+[triggers]
+crons = [
+  "0 2 * * *",
+  "0 3 * * *",
+  "0 6 * * *"
+]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "skillcard"
+database_id = "placeholder"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "placeholder"
+
+[ai]
+binding = "AI"
+
+[vars]
+SITE_URL = "https://skillcard.me"
+
+# Secrets (via `wrangler secret put`):
+# GITHUB_TOKEN
+# SERPER_API_KEY
+# DEPLOY_HOOK_URL
+# ADMIN_API_KEY

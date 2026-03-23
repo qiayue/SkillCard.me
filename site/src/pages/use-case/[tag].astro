@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import SkillCard from '../../components/SkillCard.astro';
+import { getSkills } from '../../lib/api';
+
+// Common use case tags - will be expanded dynamically as more skills are added
+const COMMON_TAGS = [
+  'web-scraping', 'code-review', 'doc-writing', 'data-analysis',
+  'testing', 'deployment', 'design', 'file-management',
+  'browser-automation', 'api-integration', 'search', 'database',
+];
+
+export async function getStaticPaths() {
+  return COMMON_TAGS.map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+const tagDisplay = tag ? tag.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : '';
+
+// For SSG, we fetch all skills and filter by tag client-side
+// In production, this would use a dedicated API endpoint
+let skills: Awaited<ReturnType<typeof getSkills>>['data'] = [];
+try {
+  const res = await getSkills({ sort: 'overall' });
+  skills = res.data;
+} catch (e) {
+  console.error(`Failed to fetch skills for use-case ${tag}:`, e);
+}
+---
+
+<Base
+  title={`Best AI Agent Skills for ${tagDisplay} | SkillCard`}
+  description={`Find the best AI agent skills for ${tagDisplay.toLowerCase()}. Compare features, ratings, and installation guides.`}
+>
+  <main class="container">
+    <section class="hero">
+      <h1>AI Agent Skills for {tagDisplay}</h1>
+      <p>Top rated skills for {tagDisplay.toLowerCase()} tasks.</p>
+    </section>
+
+    <div class="skills-grid">
+      {skills.map((skill) => (
+        <SkillCard
+          slug={skill.slug}
+          name={skill.name}
+          author={skill.author}
+          avatarUrl={skill.avatar_url}
+          summary={skill.ai_summary || skill.description}
+          category={skill.category}
+          score={skill.score?.overall_score ?? null}
+          trend={skill.score?.trend ?? null}
+          language={skill.language}
+        />
+      ))}
+    </div>
+
+    {skills.length === 0 && (
+      <p style="text-align:center;color:var(--text-muted);padding:48px 0">
+        No skills found for this use case yet.
+      </p>
+    )}
+  </main>
+</Base>
