@@ -1,0 +1,194 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getSkills, getSkillDetail } from '../../lib/api';
+import type { SkillDetail } from '../../lib/api';
+
+export async function getStaticPaths() {
+  try {
+    const { data } = await getSkills({ sort: 'overall' });
+    return data.map((skill) => ({
+      params: { slug: skill.slug },
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+let skill: SkillDetail | null = null;
+
+try {
+  skill = await getSkillDetail(slug as string);
+} catch (e) {
+  console.error(`Failed to fetch skill ${slug}:`, e);
+}
+
+if (!skill) {
+  return Astro.redirect('/404');
+}
+
+const title = `${skill.name} - Review, Installation & Usage Guide | SkillCard`;
+const description = skill.ai_summary || skill.description || `${skill.name} AI agent skill review`;
+const scoreDisplay = skill.score ? Math.round(skill.score.overall_score) : null;
+
+function parseJSON<T>(str: string | null, fallback: T): T {
+  if (!str) return fallback;
+  try { return JSON.parse(str); } catch { return fallback; }
+}
+
+const useCases = parseJSON<string[]>(skill.content?.use_cases ?? null, []);
+const prosConsData = parseJSON<{ pros: string[]; cons: string[] }>(skill.content?.pros_cons ?? null, { pros: [], cons: [] });
+const alternatives = parseJSON<string[]>(skill.content?.alternatives ?? null, []);
+const topics = parseJSON<string[]>(skill.topics, []);
+const compatibility = parseJSON<string[]>(skill.compatibility, []);
+const relatedLinks = parseJSON<{ title: string; url: string }[]>(skill.content?.related_links ?? null, []);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareSourceCode',
+  name: skill.name,
+  description: description,
+  author: { '@type': 'Person', name: skill.author },
+  codeRepository: skill.github_url,
+  programmingLanguage: skill.language,
+  license: skill.license,
+};
+---
+
+<Base title={title} description={description}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <main class="container">
+    <section class="detail-header">
+      <h1 class="detail-title">{skill.name} — AI Agent Skill Review</h1>
+      <div class="detail-meta">
+        {skill.avatar_url && <img src={skill.avatar_url} alt={skill.author} style="width:28px;height:28px;border-radius:6px" />}
+        <span>by <a href={`https://github.com/${skill.author}`}>{skill.author}</a></span>
+        <span>|</span>
+        <a href={skill.github_url}>GitHub</a>
+        {skill.language && <><span>|</span><span>{skill.language}</span></>}
+        {skill.license && <><span>|</span><span>{skill.license}</span></>}
+        {compatibility.length > 0 && (
+          <>
+            <span>|</span>
+            {compatibility.map((c) => <span class="tag">{c}</span>)}
+          </>
+        )}
+      </div>
+    </section>
+
+    {skill.score && (
+      <div class="detail-scores">
+        <div class="score-card">
+          <div class="score-card-value">{Math.round(skill.score.overall_score)}</div>
+          <div class="score-card-label">Overall Score</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-value">{Math.round(skill.score.popularity_score)}</div>
+          <div class="score-card-label">Popularity</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-value">{Math.round(skill.score.activity_score)}</div>
+          <div class="score-card-label">Activity</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-value">{Math.round(skill.score.maturity_score)}</div>
+          <div class="score-card-label">Maturity</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-value">{Math.round(skill.score.momentum_score)}</div>
+          <div class="score-card-label">Momentum</div>
+        </div>
+      </div>
+    )}
+
+    {skill.content?.overview && (
+      <section class="wiki-section">
+        <h2>Overview</h2>
+        <Fragment set:html={skill.content.overview} />
+      </section>
+    )}
+
+    {useCases.length > 0 && (
+      <section class="wiki-section">
+        <h2>Use Cases</h2>
+        <ul>
+          {useCases.map((uc) => <li>{uc}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {skill.content?.installation && (
+      <section class="wiki-section">
+        <h2>Installation</h2>
+        <Fragment set:html={skill.content.installation} />
+      </section>
+    )}
+
+    {skill.content?.usage_guide && (
+      <section class="wiki-section">
+        <h2>Usage Guide</h2>
+        <Fragment set:html={skill.content.usage_guide} />
+      </section>
+    )}
+
+    {skill.content?.tips && (
+      <section class="wiki-section">
+        <h2>Tips & Best Practices</h2>
+        <Fragment set:html={skill.content.tips} />
+      </section>
+    )}
+
+    {(prosConsData.pros.length > 0 || prosConsData.cons.length > 0) && (
+      <section class="wiki-section">
+        <h2>Pros & Cons</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+          <div>
+            <h3 style="color:var(--green);font-size:16px;margin-bottom:8px">Pros</h3>
+            <ul>{prosConsData.pros.map((p) => <li>{p}</li>)}</ul>
+          </div>
+          <div>
+            <h3 style="color:var(--red);font-size:16px;margin-bottom:8px">Cons</h3>
+            <ul>{prosConsData.cons.map((c) => <li>{c}</li>)}</ul>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="wiki-section">
+      <h2>Details</h2>
+      <table class="info-table">
+        <tr><td>Author</td><td><a href={`https://github.com/${skill.author}`}>{skill.author}</a></td></tr>
+        <tr><td>Repository</td><td><a href={skill.github_url}>{skill.slug}</a></td></tr>
+        {skill.language && <tr><td>Language</td><td>{skill.language}</td></tr>}
+        {skill.license && <tr><td>License</td><td>{skill.license}</td></tr>}
+        <tr><td>Category</td><td><a href={`/category/${skill.category}`}>{skill.category}</a></td></tr>
+        {topics.length > 0 && (
+          <tr><td>Topics</td><td>{topics.map((t) => <span class="tag" style="margin-right:4px">{t}</span>)}</td></tr>
+        )}
+        <tr><td>Created</td><td>{new Date(skill.created_at).toLocaleDateString()}</td></tr>
+        <tr><td>Updated</td><td>{new Date(skill.updated_at).toLocaleDateString()}</td></tr>
+      </table>
+    </section>
+
+    {relatedLinks.length > 0 && (
+      <section class="wiki-section">
+        <h2>Related Resources</h2>
+        <ul>
+          {relatedLinks.map((link) => (
+            <li><a href={link.url} target="_blank" rel="noopener">{link.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {alternatives.length > 0 && (
+      <section class="wiki-section">
+        <h2>Alternatives</h2>
+        <ul>
+          {alternatives.map((alt) => <li>{alt}</li>)}
+        </ul>
+      </section>
+    )}
+  </main>
+</Base>

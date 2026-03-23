@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import SkillCard from '../components/SkillCard.astro';
+import { getTrending } from '../lib/api';
+
+let trending: Awaited<ReturnType<typeof getTrending>> = [];
+try {
+  trending = await getTrending();
+} catch (e) {
+  console.error('Failed to fetch trending:', e);
+}
+---
+
+<Base title="Trending AI Agent Skills This Week | SkillCard" description="Discover the hottest AI agent skills trending this week. Updated daily.">
+  <main class="container">
+    <section class="hero">
+      <h1>Trending AI Agent Skills</h1>
+      <p>Skills gaining the most momentum this week.</p>
+    </section>
+
+    <div class="skills-grid">
+      {trending.map((skill) => (
+        <SkillCard
+          slug={skill.slug}
+          name={skill.name}
+          author={skill.author}
+          avatarUrl={skill.avatar_url}
+          summary={skill.ai_summary || skill.description}
+          category={skill.category}
+          score={skill.score?.overall_score ?? null}
+          trend={skill.score?.trend ?? null}
+          language={skill.language}
+        />
+      ))}
+    </div>
+
+    {trending.length === 0 && (
+      <p style="text-align:center;color:var(--text-muted);padding:48px 0">
+        No trending data yet. Check back after a few days of data collection.
+      </p>
+    )}
+  </main>
+</Base>

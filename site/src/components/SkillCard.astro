@@ -1,0 +1,39 @@
+---
+interface Props {
+  slug: string;
+  name: string;
+  author: string;
+  avatarUrl: string | null;
+  summary: string | null;
+  category: string;
+  score: number | null;
+  trend: string | null;
+  language: string | null;
+  stars?: number;
+}
+
+const { slug, name, author, avatarUrl, summary, category, score, trend, language } = Astro.props;
+const trendClass = trend === 'rising' ? 'trend-rising' : trend === 'declining' ? 'trend-declining' : 'trend-stable';
+const trendLabel = trend === 'rising' ? 'Rising' : trend === 'declining' ? 'Declining' : 'Stable';
+---
+
+<a href={`/skill/${slug}`} class="skill-card" style="display:block;text-decoration:none;color:inherit">
+  <div class="skill-card-header">
+    {avatarUrl && <img src={avatarUrl} alt={author} class="skill-card-avatar" loading="lazy" />}
+    <div>
+      <div class="skill-card-name">{name}</div>
+      <div class="skill-card-author">by {author}</div>
+    </div>
+  </div>
+  <div class="skill-card-desc">{summary || 'An AI agent skill.'}</div>
+  <div class="skill-card-footer">
+    <div style="display:flex;align-items:center;gap:12px">
+      {score !== null && <span class="skill-card-score">{Math.round(score)}</span>}
+      {trend && <span class={`trend-badge ${trendClass}`}>{trendLabel}</span>}
+    </div>
+    <div class="skill-card-tags">
+      <span class="tag category">{category}</span>
+      {language && <span class="tag">{language}</span>}
+    </div>
+  </div>
+</a>

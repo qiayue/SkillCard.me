@@ -1,0 +1,53 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, description = 'AI Agent Skill Discovery & Ratings - Find, compare, and evaluate the best AI agent skills.', ogImage } = Astro.props;
+const siteUrl = 'https://skillcard.me';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl + Astro.url.pathname} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={siteUrl + Astro.url.pathname} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo">Skill<span>Card</span></a>
+        <ul class="nav-links">
+          <li><a href="/">Browse</a></li>
+          <li><a href="/trending">Trending</a></li>
+          <li><a href="/category/coding">Categories</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer class="footer">
+      <div class="container">
+        <p>SkillCard.me — AI Agent Skill Discovery & Ratings</p>
+        <p style="margin-top: 8px">Data updated daily. Powered by GitHub data & AI analysis.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

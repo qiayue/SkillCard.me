@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import SkillCard from '../../components/SkillCard.astro';
+import { getSkills, getCategories } from '../../lib/api';
+
+const ALL_CATEGORIES = ['web', 'document', 'coding', 'data', 'design', 'devops', 'other'];
+
+export async function getStaticPaths() {
+  return ALL_CATEGORIES.map((cat) => ({ params: { slug: cat } }));
+}
+
+const { slug } = Astro.params;
+const categoryName = slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : 'All';
+
+let skills: Awaited<ReturnType<typeof getSkills>>['data'] = [];
+try {
+  const res = await getSkills({ category: slug, sort: 'overall' });
+  skills = res.data;
+} catch (e) {
+  console.error(`Failed to fetch category ${slug}:`, e);
+}
+---
+
+<Base
+  title={`Best ${categoryName} AI Agent Skills | SkillCard`}
+  description={`Discover and compare the best ${categoryName.toLowerCase()} AI agent skills. Ranked by data-driven scores.`}
+>
+  <main class="container">
+    <section class="hero">
+      <h1>{categoryName} AI Agent Skills</h1>
+      <p>Top rated {categoryName.toLowerCase()} skills for AI agents.</p>
+    </section>
+
+    <div class="category-filter">
+      <a href="/" class="category-btn">All</a>
+      {ALL_CATEGORIES.map((cat) => (
+        <a
+          href={`/category/${cat}`}
+          class={`category-btn ${cat === slug ? 'active' : ''}`}
+        >
+          {cat.charAt(0).toUpperCase() + cat.slice(1)}
+        </a>
+      ))}
+    </div>
+
+    <div class="skills-grid">
+      {skills.map((skill) => (
+        <SkillCard
+          slug={skill.slug}
+          name={skill.name}
+          author={skill.author}
+          avatarUrl={skill.avatar_url}
+          summary={skill.ai_summary || skill.description}
+          category={skill.category}
+          score={skill.score?.overall_score ?? null}
+          trend={skill.score?.trend ?? null}
+          language={skill.language}
+        />
+      ))}
+    </div>
+
+    {skills.length === 0 && (
+      <p style="text-align:center;color:var(--text-muted);padding:48px 0">
+        No {categoryName.toLowerCase()} skills found yet.
+      </p>
+    )}
+  </main>
+</Base>

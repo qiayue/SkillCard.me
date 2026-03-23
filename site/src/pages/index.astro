@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import SkillCard from '../components/SkillCard.astro';
+import { getSkills, getStats, getCategories } from '../lib/api';
+
+let skills: Awaited<ReturnType<typeof getSkills>>['data'] = [];
+let stats = { total_skills: 0, active_skills: 0, total_stars: 0, categories: 0 };
+let categories: { category: string; count: number }[] = [];
+
+try {
+  const [skillsRes, statsRes, catsRes] = await Promise.all([
+    getSkills({ sort: 'overall' }),
+    getStats(),
+    getCategories(),
+  ]);
+  skills = skillsRes.data;
+  stats = statsRes;
+  categories = catsRes;
+} catch (e) {
+  console.error('Failed to fetch data:', e);
+}
+---
+
+<Base title="SkillCard - AI Agent Skill Reviews & Ratings">
+  <main class="container">
+    <section class="hero">
+      <h1>AI Agent Skill Discovery & Ratings</h1>
+      <p>Find, compare, and evaluate the best AI agent skills. Data-driven rankings updated daily.</p>
+
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value">{stats.active_skills}</div>
+          <div class="stat-label">Skills Tracked</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">{stats.total_stars.toLocaleString()}</div>
+          <div class="stat-label">Total Stars</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">{stats.categories}</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="category-filter">
+      <a href="/" class="category-btn active">All</a>
+      {categories.map((cat) => (
+        <a href={`/category/${cat.category}`} class="category-btn">
+          {cat.category.charAt(0).toUpperCase() + cat.category.slice(1)} ({cat.count})
+        </a>
+      ))}
+    </div>
+
+    <div class="skills-grid">
+      {skills.map((skill) => (
+        <SkillCard
+          slug={skill.slug}
+          name={skill.name}
+          author={skill.author}
+          avatarUrl={skill.avatar_url}
+          summary={skill.ai_summary || skill.description}
+          category={skill.category}
+          score={skill.score?.overall_score ?? null}
+          trend={skill.score?.trend ?? null}
+          language={skill.language}
+        />
+      ))}
+    </div>
+
+    {skills.length === 0 && (
+      <p style="text-align:center;color:var(--text-muted);padding:48px 0">
+        No skills found yet. Data will appear after the first collection run.
+      </p>
+    )}
+  </main>
+</Base>
