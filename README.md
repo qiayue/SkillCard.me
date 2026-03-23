@@ -722,14 +722,130 @@ SITE_URL = "https://skillcard.me"
 ### 已知 Awesome-list 仓库（持续补充）
 
 ```
-# Skill 收集仓库（解析其中的 GitHub 链接）
-# - 在此补充已知的 awesome-list 仓库 URL...
+# ═══ Awesome-list 仓库（解析其中的 GitHub 链接批量导入）═══
 
-# 直接录入的 Skills
-# Web & Browser
-- eze-is/web-access
+# MCP Server 收集
+- punkpeye/awesome-mcp-servers
+- wong2/awesome-mcp-servers
+- appcypher/awesome-mcp-servers
+- TensorBlock/awesome-mcp-servers
+- PipedreamHQ/awesome-mcp-servers
+- ever-works/awesome-mcp-servers
+- rohitg00/awesome-devops-mcp-servers
+- AlexMili/Awesome-MCP
 
-# 在此补充更多已知的 Agent Skills...
+# Claude Code Skills 收集
+- hesreallyhim/awesome-claude-code
+- jqueryscript/awesome-claude-code
+- pascalporedda/awesome-claude-code
+- rohitg00/awesome-claude-code-toolkit
+- BehiSecc/awesome-claude-skills
+- ComposioHQ/awesome-claude-skills
+- travisvn/awesome-claude-skills
+- VoltAgent/awesome-claude-code-subagents
+- heilcheng/awesome-agent-skills
+- skillmatic-ai/awesome-agent-skills
+
+# ═══ 直接录入的 Skills（约 70 个种子）═══
+
+# Official / Reference
+- modelcontextprotocol/servers
+- github/github-mcp-server
+- microsoft/playwright-mcp
+- awslabs/mcp
+- docker/hub-mcp
+- docker/mcp-gateway
+
+# Database
+- bytebase/dbhub
+- runekaagaard/mcp-alchemy
+- FreePeak/db-mcp-server
+- MariaDB/mcp
+- jparkerweb/mcp-sqlite
+- executeautomation/mcp-database-server
+
+# Browser Automation
+- executeautomation/mcp-playwright
+- VikashLoomba/MCP-Server-Playwright
+- badchars/mcp-browser
+
+# File System
+- mark3labs/mcp-filesystem-server
+- cyanheads/filesystem-mcp-server
+
+# Web Scraping & Fetch
+- firecrawl/firecrawl-mcp-server
+- zcaceres/fetch-mcp
+- MaitreyaM/WEB-SCRAPING-MCP
+- cyberchitta/scrapling-fetch-mcp
+- sigmaSd/scrap-mcp
+
+# Git & Version Control
+- cyanheads/git-mcp-server
+- idosal/git-mcp
+
+# Memory & Knowledge Graph
+- shaneholloman/mcp-knowledge-graph
+- doobidoo/mcp-memory-service
+- okooo5km/memory-mcp-server
+- DeusData/codebase-memory-mcp
+
+# Vector Database
+- chroma-core/chroma-mcp
+- qdrant/mcp-server-qdrant
+- zilliztech/mcp-server-milvus
+
+# Communication
+- korotovsky/slack-mcp-server
+- ubie-oss/slack-mcp-server
+
+# Docker & DevOps
+- ckreiling/mcp-server-docker
+- QuantGeekDev/docker-mcp
+
+# Code Analysis & Security
+- hyperb1iss/lucidity-mcp
+- invariantlabs-ai/mcp-scan
+- anselmoo/mcp-server-analyzer
+
+# Sequential Thinking
+- FradSer/mcp-server-mas-sequential-thinking
+- spences10/mcp-sequentialthinking-tools
+
+# Task Management
+- greirson/mcp-todoist
+- abhiz123/todoist-mcp-server
+
+# AWS Cloud
+- alexei-led/aws-mcp-server
+- rishikavikondala/mcp-server-aws
+
+# Search & Retrieval
+- ItzCrazyKns/Perplexica
+- SciPhi-AI/agent-search
+
+# Claude Code Skills & Slash Commands
+- alirezarezvani/claude-skills
+- daymade/claude-code-skills
+- levnikolaevich/claude-code-skills
+- glebis/claude-skills
+- qdhenry/Claude-Command-Suite
+- wshobson/commands
+- alirezarezvani/claude-code-skill-factory
+- Jeffallan/claude-skills
+- FrancyJGLisboa/agent-skill-creator
+- K-Dense-AI/claude-scientific-skills
+- danielrosehill/Claude-Slash-Commands
+- artemgetmann/claude-slash-commands
+
+# AI Agent Frameworks & Tools
+- kortix-ai/suna
+- unclecode/crawl4ai
+- ScrapeGraphAI/Scrapegraph-ai
+- vanna-ai/vanna
+- eosphoros-ai/DB-GPT
+- Canner/WrenAI
+- mindsdb/mindsdb
 ```
 
 ### 采集渠道优先级
